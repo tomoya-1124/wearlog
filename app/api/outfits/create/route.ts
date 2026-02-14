@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   if (!date) return new NextResponse("date is required", { status: 400 });
 
   // share_id 生成（衝突したら再生成）
-  let shareId = makeShareId(12);
+  let shareId = makeShareId();
 
   // insert outfit
   const { data: outfit, error: oErr } = await supabase
