@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   if (oErr) {
     // share_id衝突の可能性を雑に救済
     if (oErr.message.includes("duplicate key value")) {
-      shareId = makeShareId(14);
+      shareId = makeShareId();
       const retry = await supabase
         .from("outfits")
         .insert({ date, memo, tags, image_url: imageUrl, public_flg: publicFlg, share_id: shareId })
