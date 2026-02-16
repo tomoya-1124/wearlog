@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@supabase/supabase-js";
 import { makeShareId } from "@/lib/shareId";
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { persistSession: false } }
+);
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -18,7 +24,7 @@ export async function POST(req: Request) {
   let shareId = makeShareId();
 
   // insert outfit
-  const { data: outfit, error: oErr } = await supabase
+  const { data: outfit, error: oErr } = await supabaseAdmin
     .from("outfits")
     .insert({
       date,
@@ -35,7 +41,7 @@ export async function POST(req: Request) {
     // share_id衝突の可能性を雑に救済
     if (oErr.message.includes("duplicate key value")) {
       shareId = makeShareId();
-      const retry = await supabase
+      const retry = await supabaseAdmin
         .from("outfits")
         .insert({ date, memo, tags, image_url: imageUrl, public_flg: publicFlg, share_id: shareId })
         .select("id, share_id")
@@ -48,7 +54,7 @@ export async function POST(req: Request) {
       // outfit_items insert
       if (itemIds.length) {
         const rows = itemIds.map((id) => ({ outfit_id: o2.id, item_id: id }));
-        const oi = await supabase.from("outfit_items").insert(rows);
+        const oi = await supabaseAdmin.from("outfit_items").insert(rows);
         if (oi.error) return new NextResponse(oi.error.message, { status: 500 });
       }
       return NextResponse.json({ ok: true, outfitId: o2.id, shareId: o2.share_id });
@@ -59,7 +65,7 @@ export async function POST(req: Request) {
   // outfit_items insert
   if (itemIds.length) {
     const rows = itemIds.map((id) => ({ outfit_id: outfit.id, item_id: id }));
-    const { error: oiErr } = await supabase.from("outfit_items").insert(rows);
+    const { error: oiErr } = await supabaseAdmin.from("outfit_items").insert(rows);
     if (oiErr) return new NextResponse(oiErr.message, { status: 500 });
   }
 
