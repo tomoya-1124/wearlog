@@ -1,43 +1,46 @@
 import { supabase } from "@/lib/supabaseClient";
+import { notFound } from "next/navigation";
 
-export default async function SharePage({ params }: { params: { shareId: string } }) {
-  const shareId = params.shareId;
+type Props = {
+  params: { shareId: string };
+};
 
-  const { data: outfit, error } = await supabase
+export default async function SharePage({ params }: Props) {
+  const { shareId } = params;
+
+  const { data, error } = await supabase
     .from("outfits")
-    .select("id, date, memo, tags, image_url, public_flg")
+    .select("*")
     .eq("share_id", shareId)
+    .eq("public_flg", true)
     .single();
 
-  if (error || !outfit) return <main style={{ padding: 16 }}>Not found</main>;
-  if (!outfit.public_flg) return <main style={{ padding: 16 }}>Private</main>;
-
-  // アイテムも表示（join）
-  const { data: items } = await supabase
-    .from("outfit_items")
-    .select("item_id, items(name, category, brands(name))")
-    .eq("outfit_id", outfit.id);
+  if (error || !data) {
+    return notFound();
+  }
 
   return (
-    <main style={{ padding: 16, maxWidth: 520, margin: "0 auto" }}>
-      <h1>{outfit.date}</h1>
-      {outfit.image_url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={outfit.image_url} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover", borderRadius: 12 }} />
-      )}
-      <p style={{ marginTop: 10 }}>{outfit.memo ?? ""}</p>
+    <div className="min-h-screen p-6 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-800 text-white">
+      <div className="max-w-xl mx-auto space-y-6">
 
-      <section style={{ marginTop: 12 }}>
-        <h2>Items</h2>
-        <ul>
-          {items?.map((row: any) => (
-            <li key={row.item_id}>
-              {row.items?.brands?.name} / {row.items?.name}
-              {row.items?.category ? ` (${row.items.category})` : ""}
-            </li>
-          ))}
-        </ul>
-      </section>
-    </main>
+        {data.image_url && (
+          <img
+            src={data.image_url}
+            alt="outfit"
+            className="w-full rounded-xl border border-white/20"
+          />
+        )}
+
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">{data.date}</h1>
+
+          {data.memo && (
+            <p className="text-white/80">{data.memo}</p>
+          )}
+        </div>
+
+      </div>
+    </div>
   );
 }
+
