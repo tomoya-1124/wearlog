@@ -59,12 +59,12 @@ export default function OutfitForm() {
     const path = `${date}/${filename}`;
 
     const { error } = await supabase.storage
-      .from("outfit-images")
+      .from("outfit-image")
       .upload(path, file, { cacheControl: "3600", upsert: false });
 
     if (error) throw error;
 
-    const { data } = supabase.storage.from("outfit-images").getPublicUrl(path);
+    const { data } = supabase.storage.from("outfit-image").getPublicUrl(path);
     return data.publicUrl;
   }
 
