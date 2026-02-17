@@ -59,28 +59,30 @@ export default function Home() {
       {!loading && rows.length === 0 && <p>まだ投稿がありません</p>}
 
       <ul style={{ listStyle: "none", padding: 0 }}>
-        {rows.map((r) => (
-          <li
-            key={r.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              padding: 12,
-              marginBottom: 12,
-            }}
-          >
-            <div style={{ fontSize: 12, opacity: 0.7 }}>{r.date}</div>
-            <div style={{ fontWeight: 700 }}>
-              {r.brand} / {r.item_name}
-            </div>
-            {r.memo && <div style={{ marginTop: 6 }}>{r.memo}</div>}
-            <div style={{ fontSize: 12, opacity: 0.7, marginTop: 8 }}>
-              share_id: {r.share_id}
-            </div>
-          </li>
-        ))}
-      </ul>
+	  {rows.map((r) => (
+ 	　　 <li key={r.id} style={{ marginBottom: 12 }}>
+ 		 <Link
+       　　　　　 href={`/s/${r.share_id}`}
+       　　　　　 style={{ textDecoration: "none", color: "inherit" }}
+      　　　　　>
+       　　　　　 <div
+         　　　　　 style={{
+           　　　　　 border: "1px solid #ddd",
+           　　　　　 borderRadius: 8,
+           　　　　　 padding: 12,
+         　　　　　 }}
+       　　　　　 >
+         　　　　　 <div style={{ fontSize: 12, opacity: 0.7 }}>{r.date}</div>
+        　　　　　  <div style={{ fontWeight: 700 }}>{r.brand} / {r.item_name}</div>
+         　　　　　 {r.memo && <div style={{ marginTop: 6 }}>{r.memo}</div>}
+         　　　　　 <div style={{ fontSize: 12, opacity: 0.7, marginTop: 8 }}>
+           　　　　　 share_id: {r.share_id}
+         　　　　　 </div>
+      　　　　　  </div>
+    　　　　　  </Link>
+   　　　　　 </li>
+ 　　　　　 ))}
+　　　　</ul>
     </main>
   );
 }
-
