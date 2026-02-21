@@ -1,12 +1,9 @@
 import { supabase } from "@/lib/supabaseClient";
-import { notFound } from "next/navigation";
 
-type Props = {
-  params: { shareId: string };
-};
+type Props = { params: { shareId: string } };
 
 export default async function SharePage({ params }: Props) {
-  const { shareId } = params;
+  const shareId = params.shareId;
 
   const { data, error } = await supabase
     .from("outfits")
@@ -15,32 +12,29 @@ export default async function SharePage({ params }: Props) {
     .eq("public_flg", true)
     .single();
 
-  if (error || !data) {
-    return notFound();
+  if (error) {
+    return (
+      <main style={{ padding: 24, color: "white" }}>
+        <h1>Share Debug</h1>
+        <pre>{JSON.stringify({ shareId, error }, null, 2)}</pre>
+      </main>
+    );
+  }
+
+  if (!data) {
+    return (
+      <main style={{ padding: 24, color: "white" }}>
+        <h1>Share Debug</h1>
+        <p>NO DATA</p>
+        <p>shareId: {shareId}</p>
+      </main>
+    );
   }
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-800 text-white">
-      <div className="max-w-xl mx-auto space-y-6">
-
-        {data.image_url && (
-          <img
-            src={data.image_url}
-            alt="outfit"
-            className="w-full rounded-xl border border-white/20"
-          />
-        )}
-
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">{data.date}</h1>
-
-          {data.memo && (
-            <p className="text-white/80">{data.memo}</p>
-          )}
-        </div>
-
-      </div>
-    </div>
+    <main style={{ padding: 24, color: "white" }}>
+      <h1>OK</h1>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </main>
   );
 }
-
