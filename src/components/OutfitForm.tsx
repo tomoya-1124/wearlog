@@ -21,6 +21,7 @@ type ItemRow = {
 export default function OutfitForm() {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [memo, setMemo] = useState("");
+  const [title, setTitle] = useState("");
   const [publicFlg, setPublicFlg] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
