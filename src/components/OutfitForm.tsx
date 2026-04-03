@@ -86,16 +86,18 @@ export default function OutfitForm() {
         .filter((x) => x.brand.length > 0 || x.name.length > 0);
 
       const { error } = await supabase.from("outfits").insert({
-        date,
-        memo: memo.trim() ? memo.trim() : null,
-        public_flg: publicFlg,
-        image_url,
-        items_json: cleaned, // ★これが複数アイテム本体
+       title: title.trim() ? title.trim() : null,
+　　　 date,
+       memo: memo.trim() ? memo.trim() : null,
+       public_flg: publicFlg,
+       image_url,
+       items_json: cleaned, // ★これが複数アイテム本体
       });
 
       if (error) throw error;
 
-      setMemo("");
+      setTitle("");
+　　　setMemo("");
       setPublicFlg(false);
       setFile(null);
       setItems(CATEGORIES.map((c) => ({ category: c, brand: "", name: "" })));
